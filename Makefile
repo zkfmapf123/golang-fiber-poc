@@ -3,3 +3,6 @@ dev-run:
 
 debug-run:
 	export ENV=debug && go run app.go
+
+test:
+	export ENV=test && go test ./src/*

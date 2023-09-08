@@ -3,8 +3,11 @@ package main
 import (
 	"fmt"
 	"log"
+	"strconv"
 
 	"github.com/fiber/src/configs"
+	"github.com/fiber/src/middleware"
+	"github.com/fiber/src/router"
 	"github.com/fiber/src/utils"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/recover"
@@ -18,17 +21,19 @@ func main() {
 		CaseSensitive: true,
 		Prefork:       en.IsPork,
 	})
+	newRouter := router.InitRouter(app, strconv.Itoa(en.MajorVersion))
 
 	connectConfig()
 	setMiddleware(app)
 	setFuncMiddleware(app)
-	setRouter(app)
-	setErrorHandling(app)
+	setRouter(newRouter)
+	setErrorHandling(newRouter)
 	listen(app, en.Port)
 }
 
 func connectConfig() {
-
+	// database
+	// swagger
 }
 
 func setMiddleware(app *fiber.App) {
@@ -37,15 +42,16 @@ func setMiddleware(app *fiber.App) {
 }
 
 func setFuncMiddleware(app *fiber.App) {
-
+	middleware.CommonMiddleware(app, "/")
 }
 
-func setRouter(app *fiber.App) {
-
+func setRouter(router *router.Router) {
+	router.Helloworld("/hello")
+	router.ByeWorld("/bye")
 }
 
-func setErrorHandling(app *fiber.App) {
-
+func setErrorHandling(router *router.Router) {
+	router.ErrorRoute("/*")
 }
 
 func listen(app *fiber.App, port string) {

@@ -27,12 +27,14 @@ func GetEnv() secretEnv {
 		err = godotenv.Load(".env.prod")
 	case "debug":
 		err = godotenv.Load(".env.debug")
+	case "test":
+		err = godotenv.Load(".env.test")
 	default:
-		log.Fatalf("%s not exists", os.Getenv("ENV"))
+		err = godotenv.Load(".env.test")
 	}
 
 	if err != nil {
-		log.Fatalf("Error loading %s file => %s", os.Getenv("ENV"), err)
+		log.Fatalf("Error loading %s file => %s\n", os.Getenv("ENV"), err)
 	}
 
 	version, majorVersion := getVersion(os.Getenv("VERSION"))
@@ -48,7 +50,7 @@ func GetEnv() secretEnv {
 
 func getVersion(version string) (string, string) {
 
-	major := strings.Split(v, ".")
+	major := strings.Split(version, ".")
 	return version, major[0]
 
 }
