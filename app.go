@@ -13,6 +13,13 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/recover"
 )
 
+// @title Swagger API
+// @version 1.0.0
+// @description Hello world
+// @contact.name API Support
+// @contact.email zkfmapf123@naver.com
+// @host localhost:3010
+// @BasePath /v1
 func main() {
 
 	en := configs.GetEnv()
@@ -21,12 +28,13 @@ func main() {
 		CaseSensitive: true,
 		Prefork:       en.IsPork,
 	})
-	newRouter := router.InitRouter(app, strconv.Itoa(en.MajorVersion))
+	basePath := fmt.Sprintf("/v%s", strconv.Itoa(en.MajorVersion))
+	newRouter := router.InitRouter(app, basePath)
 
 	connectConfig()
-	setMiddleware(app)
+	setMiddleware(app, basePath)
 	setFuncMiddleware(app)
-	setRouter(newRouter)
+	setRouter(newRouter, basePath)
 	setErrorHandling(newRouter)
 	listen(app, en.Port)
 }
@@ -36,8 +44,11 @@ func connectConfig() {
 	// swagger
 }
 
-func setMiddleware(app *fiber.App) {
+func setMiddleware(app *fiber.App, basePath string) {
+	// recover
 	app.Use(recover.New())
+
+	// logger
 	utils.LogSetting(app)
 }
 
@@ -45,7 +56,8 @@ func setFuncMiddleware(app *fiber.App) {
 	middleware.CommonMiddleware(app, "/")
 }
 
-func setRouter(router *router.Router) {
+func setRouter(router *router.Router, basePath string) {
+	router.Swagger("/swagger/*", basePath)
 	router.Helloworld("/hello")
 	router.ByeWorld("/bye")
 }
@@ -57,5 +69,4 @@ func setErrorHandling(router *router.Router) {
 func listen(app *fiber.App, port string) {
 	utils.Info(fmt.Sprintf("connect Server is Running : %s", port))
 	log.Fatalln(app.Listen(fmt.Sprintf(":%s", port)))
-
 }
