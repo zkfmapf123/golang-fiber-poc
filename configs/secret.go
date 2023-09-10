@@ -5,7 +5,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/fiber/src/utils"
+	"github.com/fiber/utils"
 	"github.com/joho/godotenv"
 )
 
@@ -20,17 +20,21 @@ type secretEnv struct {
 func GetEnv() secretEnv {
 
 	var err error
-	switch os.Getenv("ENV") {
-	case "dev":
-		err = godotenv.Load(".env.dev")
-	case "prod":
-		err = godotenv.Load(".env.prod")
-	case "debug":
-		err = godotenv.Load(".env.debug")
-	case "test":
-		err = godotenv.Load(".env.test")
-	default:
-		err = godotenv.Load(".env.test")
+
+	if utils.StringToBool(os.Getenv("IS_LOCAL")) {
+		// use Docker
+		switch os.Getenv("ENV") {
+		case "dev":
+			err = godotenv.Load(".env.dev")
+		case "prod":
+			err = godotenv.Load(".env.prod")
+		case "debug":
+			err = godotenv.Load(".env.debug")
+		case "test":
+			err = godotenv.Load(".env.test")
+		default:
+			err = godotenv.Load(".env.test")
+		}
 	}
 
 	if err != nil {
@@ -42,7 +46,7 @@ func GetEnv() secretEnv {
 	return secretEnv{
 		Env:          os.Getenv("ENV"),
 		Port:         os.Getenv("PORT"),
-		IsPork:       utils.StringToBool(os.Getenv("IsPork")),
+		IsPork:       utils.StringToBool(os.Getenv("IS_PORK")),
 		Version:      version,
 		MajorVersion: utils.StringToInt(majorVersion),
 	}

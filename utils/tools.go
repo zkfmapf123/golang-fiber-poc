@@ -9,7 +9,7 @@ func StringToInt(value string) int {
 
 	v, err := strconv.Atoi(value)
 	if err != nil {
-		log.Fatalln(err)
+		log.Fatalln(value, err)
 	}
 
 	return v
